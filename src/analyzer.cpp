@@ -33,13 +33,12 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    constexpr int sampleRate = 44100;
-    double* data;
-    int size;
+    std::vector<int32_t> data;
 
-    decode_audio_file(argv[1], sampleRate, &data, &size);
+    readWav(argv[1], &data);
 
-    std::cout << "Size: " << size;
+    std::cout << "Size: " << data.size() << std::endl;
+    
     
     /*
     int N = 100;
