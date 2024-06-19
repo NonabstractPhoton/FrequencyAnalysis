@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "h6JO2EDSbN+hTMWOk4qmJtcP+0ANL486gdSytz7AoEOeBOUw+3QNCHX4sw0Yi/QtZlo7jU0cNX3xbtAxbLDlyw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\athar\\Downloads\\FrequencyAnalysis\\FrequencyGrapher\\FrequencyGrapher.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\athar\\.nuget\\packages\\scottplot\\5.0.35\\scottplot.5.0.35.nupkg.sha512",
+    "C:\\Users\\athar\\.nuget\\packages\\skiasharp\\2.88.8\\skiasharp.2.88.8.nupkg.sha512",
+    "C:\\Users\\athar\\.nuget\\packages\\skiasharp.nativeassets.linux.nodependencies\\2.88.8\\skiasharp.nativeassets.linux.nodependencies.2.88.8.nupkg.sha512",
+    "C:\\Users\\athar\\.nuget\\packages\\skiasharp.nativeassets.macos\\2.88.8\\skiasharp.nativeassets.macos.2.88.8.nupkg.sha512",
+    "C:\\Users\\athar\\.nuget\\packages\\skiasharp.nativeassets.win32\\2.88.8\\skiasharp.nativeassets.win32.2.88.8.nupkg.sha512"
+  ],
+  "logs": []
+}

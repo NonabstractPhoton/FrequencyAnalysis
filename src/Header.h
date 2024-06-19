@@ -1,8 +1,7 @@
 #pragma once
 #include <stdlib.h>
-#include <iostream>
 #include <fftw3.h>
-#include <matplot/matplot.h>
+#include <vector>
 extern "C" 
 {
     #include <libavformat/avformat.h>

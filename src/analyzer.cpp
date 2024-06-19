@@ -1,13 +1,11 @@
 #include "Header.h"
+#include "wavreader.cpp"
 #include "decoder.cpp"
+#include "helperfuncs.cpp"
 
- 
-#define PI 3.14159265
+#include <iostream>
+#include <fstream>
 
-double f(double t)
-{
-    return 2 * sin(2 * PI * t) + 3 * sin(2 * PI * 4 * t) + sin(2 * PI * 16 * t);
-}
 
 void coefsToAmplitudes(fftw_complex* coefs, int N)
 {
@@ -27,15 +25,19 @@ int main(int argc, char const *argv[])
     std::cout << "Running\n";
 
     
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cerr << "Please provide the path to an audio file as an argument." << std::endl;
+        std::cerr << "Usage: Analyzer <in.wav> <out.csv>" << std::endl;
         return -1;
     }
 
+    std::ofstream file;
+    file.open(argv[2]);
+    
+
     std::vector<double> data;
 
-    readWav(argv[1], &data);
+    readWav_float32(argv[1], &data);
 
     std::cout << "Size: " << data.size() << std::endl;
     
@@ -43,13 +45,10 @@ int main(int argc, char const *argv[])
     
     int N = data.size();
     double T = 2;
-
-    double *freqs;
     fftw_complex *out;
     fftw_plan p;
     
     out = fftw_alloc_complex(N/2+1);
-    freqs = fftw_alloc_real(N/2+1);
     
     p = fftw_plan_dft_r2c_1d(N, data.data(), out, FFTW_ESTIMATE);
     
@@ -57,28 +56,25 @@ int main(int argc, char const *argv[])
 
     coefsToAmplitudes(out, N);
 
+    file << "Frequency,Amplitude\n";
 
-    for (int i = 0; i < N / 2 + 1; i++)
+    // Only up until 30khz frequencies
+    const int frequenciesLimit = std::min(N/2+1, 60000);
+    
+    for (int i = 0; i < frequenciesLimit; i++)
     {
-        freqs[i] = i / (double)T;
+        file << i / (double)T << ',' << out[i][0] << "\n";
     }
 
-
-    std::vector<double> x;
-    std::vector<double> y;
-
-    for (int i = 0; i < N / 2 + 1; i++)
-    {
-        x.push_back(freqs[i]);
-        y.push_back(out[i][0]);
-    }
-
+    /*
     matplot::bar(x, y);
     matplot::axis(matplot::automatic);
     matplot::show();
-    
+    */
+   
+    file.close();
     fftw_destroy_plan(p);
-    fftw_free(out); fftw_free(freqs);
+    fftw_free(out);
     
 
     return 0;
