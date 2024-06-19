@@ -1,7 +1,7 @@
+
 #pragma once
 #include <stdlib.h>
-#include <fftw3.h>
-#include <vector>
+
 extern "C" 
 {
     #include <libavformat/avformat.h>

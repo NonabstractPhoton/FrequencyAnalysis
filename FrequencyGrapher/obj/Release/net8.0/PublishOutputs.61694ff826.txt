@@ -1,0 +1,15 @@
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\FrequencyGrapher.exe
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\FrequencyGrapher.dll
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\FrequencyGrapher.deps.json
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\FrequencyGrapher.runtimeconfig.json
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\FrequencyGrapher.pdb
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\ScottPlot.dll
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\SkiaSharp.dll
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\linux-arm\native\libSkiaSharp.so
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\linux-arm64\native\libSkiaSharp.so
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\linux-musl-x64\native\libSkiaSharp.so
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\linux-x64\native\libSkiaSharp.so
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\athar\Downloads\FrequencyAnalysis\Release\runtimes\win-x86\native\libSkiaSharp.dll

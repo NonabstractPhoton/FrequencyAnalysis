@@ -20,9 +20,6 @@ link_directories("${PROJECT_SOURCE_DIR}/lib/ffmpeg/lib")
 
 link_directories("${PROJECT_SOURCE_DIR}/src")
 
-
-target_link_libraries(Analyzer PRIVATE matplot)
-
 add_library(fftw SHARED IMPORTED)
 set_target_properties(fftw PROPERTIES
     IMPORTED_IMPLIB "${PROJECT_SOURCE_DIR}/lib/fftw-3.3.5-dll64/libfftw3-3.lib"

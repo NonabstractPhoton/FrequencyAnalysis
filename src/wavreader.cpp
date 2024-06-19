@@ -1,4 +1,7 @@
 #include "Header.h"
+#include <iostream>
+#include <stdio.h>
+#include <vector>
 
 int readWav_int16_t(const char* path, std::vector<double>* amplitudeData) {
     

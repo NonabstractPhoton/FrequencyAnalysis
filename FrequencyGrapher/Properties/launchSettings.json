@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FrequencyGrapher": {
+      "commandName": "Project",
+      "commandLineArgs": "hresvelg.wav"
+    }
+  }
+}
