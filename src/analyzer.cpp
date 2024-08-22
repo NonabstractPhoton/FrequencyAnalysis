@@ -1,47 +1,45 @@
 #include "Header.h"
 #include "wavreader.cpp"
 #include "decoder.cpp"
-#include "helperfuncs.cpp"
 
 #include <fftw3.h>
 #include <vector>
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
-#include <map>
+#include <filesystem>
+
+#define USAGE_ERROR_EXIT_IF(condition) if (condition) {std::cerr << "Usage: Analyzer <in.wav> <out.data> or <path/to/formatted audio directory> <path/to/data output directory>" << std::endl; return -1; }
 
 
+// Ampltiude of compelx number, normalizationf actor of 2/N for all but DC and Nyquist
 void coefsToAmplitudes(fftw_complex* coefs, int N)
 {
+    // Magnitude/N 
     coefs[0][0] = sqrt(coefs[0][0] * coefs[0][0] + coefs[0][1] * coefs[0][1]) / (double)N;
 
     for (int i = 1; i < N / 2; i++)
     {
+        // 2 * Magnitude / N
         coefs[i][0] = 2 * sqrt(coefs[i][0] * coefs[i][0] + coefs[i][1] * coefs[i][1]) / (double)N;
     }
-
+    // Magnitude/N if even else 2 * Magnitude/N
     coefs[N/2][0] = (N % 2 == 0 ? 1 : 2) * sqrt(coefs[N / 2][0] * coefs[N / 2][0] + coefs[N / 2][1] * coefs[N / 2][1]) / (double)N;
 }
 
-int main(int argc, char const *argv[])
+
+void analyzeSingleWav(const char* inFile, const char* outFile)
 {
-    
-    if (argc < 3)
-    {
-        std::cerr << "Usage: Analyzer <in.wav> <out.data>" << std::endl;
-        return -1;
-    }
-
     std::ofstream file;
-    file.open(argv[2]);
+    file.open(outFile);
     
-
     std::vector<double> data;
 
-    readWav_float32(argv[1], &data);    
+    readWav_float32(inFile, &data);    
     
     int N = data.size();
-    double T = 2;
+    constexpr int samplingRate = 44100;
+    double T = std::round(N/samplingRate);
     fftw_complex *out;
     fftw_plan p;
     
@@ -52,102 +50,103 @@ int main(int argc, char const *argv[])
     fftw_execute(p);
 
     coefsToAmplitudes(out, N);
-
-    file << "Frequency,Amplitude\n";
-
-    // Only up until 30khz frequencies
-    const int frequenciesLimit = std::min(N/2+1, 60000);
-
-    file << frequenciesLimit << "\n";
-    // A0 - A9, 27.5 Hz to 28160 hz
-    constexpr int lowestOctave = -4, highestOctave = 6;
-    constexpr int semitoneCount = (highestOctave-lowestOctave) * 12; 
-    constexpr double A4 = 440;
     
-    double freqBarriers[semitoneCount+1];
-    
-    for (int i = 0; i < semitoneCount+1; i++)
+    // Only up until 20khz frequencies
+    constexpr int maxFrequency = 20000;
+    const int frequenciesLimit = std::min(N/2+1, (int)(maxFrequency * T));
+
+    file << (frequenciesLimit/T) << "\n";
+
+    // Skipping to bins 1 Hz apart
+    for (int i = T; i <= frequenciesLimit; i+=T)
     {
-        freqBarriers[i] = A4 * std::pow(2, (lowestOctave*12 + i)/12.0);
-    }
-
-    int noteAmplitudes[12];
-    int currentIndex = 0;
-
-    for (int i = 0; i < frequenciesLimit; i++)
-    {
-        double freq = i / (double)T;
-
-        if (currentIndex < semitoneCount)
-        {
-            if (freq > (freqBarriers[currentIndex] + freqBarriers[currentIndex+1]) / 2.0)
-                currentIndex++;
-
-            noteAmplitudes[currentIndex % 12] += out[i][0];
-        }
-        
+        double freq = i / T;
         file << freq << ',' << out[i][0] << "\n";
-    }
-
-
-    std::map<int, std::string> semitoneToSharp 
-    {
-        {1, "A#"},
-        {3, "B#"},
-        {4, "C#"},
-        {6, "D#"},
-        {8, "E#"},
-        {9, "F#"},
-        {11, "G#"}
-    };
-
-    std::map<int, std::string> semitoneToFlat 
-    {
-        {1, "Bb"},
-        {2, "Cb"},
-        {4, "Db"},
-        {6, "Eb"},
-        {7, "Fb"},
-        {9, "Gb"},
-        {11, "Ab"}
-    };
-
-    bool sharps[5];
-    int sharpCheck[] = {0, 3, 5, 8, 10};
-    file << "Sharps: ";
-    for (int i = 0; i < 5; i++)
-    {
-        if (noteAmplitudes[sharpCheck[i]+1] > noteAmplitudes[sharpCheck[i]])
-        {
-            sharps[i] = true;
-            file << semitoneToSharp[sharpCheck[i]+1] << " ";
-        }
-
-    }
-
-    bool flats[6];
-    int flatCheck[] = {0,2,3,5,7,10};
-    file << "\nFlats: ";
-
-    if (noteAmplitudes[11] > noteAmplitudes[0])
-    {
-        flats[0] = true;
-        file << semitoneToFlat[11] << " ";
-    }
-
-    for (int i = 1; i < 6; i++)
-    {
-        if (noteAmplitudes[flatCheck[i]-1] > noteAmplitudes[flatCheck[i]])
-        {
-            flats[i] = true;
-            file << semitoneToFlat[flatCheck[i]-1] << " ";
-        }
     }
    
     file.close();
     fftw_destroy_plan(p);
     fftw_free(out);
+}
+
+void analyzeManyWav(const char* inDir, const char* outDir)
+{
+    std::fstream file;
+    std::stringstream inFileName, outFileName;
+
+    std::string inDirStr{inDir};
+    std::string outDirStr{outDir};
+
+    if (!inDirStr.ends_with("\\"))
+        inDirStr.append("\\");
+
+    if (!outDirStr.ends_with("\\"))
+        outDirStr.append("\\");
+
+    inFileName << inDirStr << "count.txt";
+
+    try 
+    {
+        file.open(inFileName.str());
+    }
+    catch (const std::exception& e) 
+    {
+        std::cerr << e.what();
+        file.close();
+        return;
+    }
     
+
+    std::string line;
+    std::getline(file, line);
+
+    const int count = std::stoi(line);
+
+    file.close();
+    inFileName.str(std::string());
+    inFileName.clear();
+
+    for (int i = 0; i < count; i++)
+    {
+        inFileName << inDirStr << i << ".wav";
+        outFileName << outDirStr << i << ".data";
+
+        analyzeSingleWav(inFileName.str().c_str(), outFileName.str().c_str());
+
+        inFileName.str(std::string());
+        inFileName.clear();
+
+        outFileName.str(std::string());
+        outFileName.clear();
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    USAGE_ERROR_EXIT_IF(argc < 2)    
+
+    std::string out = std::string{ argv[2] };
+
+    // Must be a .data file or a valid directory
+    USAGE_ERROR_EXIT_IF
+    (
+        !out.ends_with(".data")
+        && 
+        out.compare(".") != 0
+        &&
+        out.find("\\") == std::string::npos 
+        &&
+        out.find("/") == std::string::npos
+    );
+
+    if (out.ends_with(".data"))
+    {
+        analyzeSingleWav(argv[1], argv[2]);
+    }
+    else
+    {
+        analyzeManyWav(argv[1], argv[2]);
+    }
 
     return 0;
 }

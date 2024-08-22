@@ -84,5 +84,7 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp"
-    }
+    },
+    "cmake.configureSettings": {},
+    "cmake.generator": "Visual Studio 17 2022"
 }

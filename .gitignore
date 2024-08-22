@@ -12,3 +12,10 @@ _deps
 build/
 lib/
 .vscode/
+training_set/audio/raw/
+training_set/audio/formatted/
+FrequencyGrapher/obj/
+FrequencyGrapher/bin/
+FrequencyGrapher/.vs/
+FrequencyGrapher/Properties/
+sklearn-env/Lib/site-packages/

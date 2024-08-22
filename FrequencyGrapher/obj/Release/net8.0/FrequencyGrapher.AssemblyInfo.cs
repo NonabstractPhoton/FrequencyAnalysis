@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FrequencyGrapher")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8499882681eb11bb73df97fc5e3e1101ea7ce184")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06de9e22a416ee915c8f24c0ae1183fbe645d4cf")]
 [assembly: System.Reflection.AssemblyProductAttribute("FrequencyGrapher")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FrequencyGrapher")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

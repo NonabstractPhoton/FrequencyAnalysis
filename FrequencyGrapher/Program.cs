@@ -40,8 +40,6 @@ namespace FrequencyGrapher
 
             using (StreamReader reader = new(pathToData+"out.data"))
             {
-                reader.ReadLine(); // Skip header
-
                 double entries = double.Parse(reader.ReadLine());
 
                 double[] freqs = new double[freqsPerPlot], amplitudes = new double[freqsPerPlot];
