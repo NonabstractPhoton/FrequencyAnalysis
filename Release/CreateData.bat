@@ -4,10 +4,11 @@ setlocal enabledelayedexpansion
 set /p url=Enter a playlist URL to download audio from: 
 set /p start=Enter the start index (Inclusive, 1-based): 
 set /p end=Enter the end index (Inclusive):
+set /p length=Enter length in seconds to cut audio to: 
 
 cd ..\training_set\audio\raw\
 
-yt-dlp !url! --extract-audio --audio-format wav --postprocessor-args "ExtractAudio:-t 30" -I, --playlist-items !start!:!end!
+yt-dlp !url! --extract-audio --audio-format wav --postprocessor-args "ExtractAudio: -t !length!" --playlist-items !start!:!end!
 
 cd ..
 
@@ -29,19 +30,19 @@ mkdir formatted\!formattedDirIndex!\
 set count=0
 for %%F in (raw\*.*) do (
     ffmpeg -i "%%F" -ar 44100 -acodec pcm_f32le -ac 1 "formatted\!formattedDirIndex!\!count!.wav"
-    if %errorlevel%==0 (
+    if !errorlevel!==0 (
         echo !count! - %%F >> Pairings!formattedDirIndex!.txt
         set /A count=count+1
     )
 )
 
-echo %count% > formatted\!formattedDirIndex!\count.txt
+echo !count! > formatted\!formattedDirIndex!\count.txt
 
 del /q raw
 
 cd ..
 
-set trainingSetPath=%cd%
+set trainingSetPath=!cd!
 
 mkdir data\!formattedDirIndex!
 

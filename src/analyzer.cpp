@@ -30,16 +30,26 @@ void coefsToAmplitudes(fftw_complex* coefs, int N)
 
 void analyzeSingleWav(const char* inFile, const char* outFile)
 {
-    std::ofstream file;
-    file.open(outFile);
-    
     std::vector<double> data;
 
     readWav_float32(inFile, &data);    
     
-    int N = data.size();
     constexpr int samplingRate = 44100;
-    double T = std::round(N/samplingRate);
+    
+    if (data.size() > samplingRate)
+        data.erase(data.end()-data.size() % samplingRate, data.end());
+    else
+    {
+        std::cerr << "Audio file too short. Skipping " << std::string{inFile} << std::endl;
+        return;
+    }
+
+    std::ofstream file;
+    file.open(outFile);
+
+    const int N = data.size();
+    // Rounding should be redundant, left in for edge cases of short durations
+    const double T = std::round(data.size()/samplingRate);
     fftw_complex *out;
     fftw_plan p;
     

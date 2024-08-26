@@ -11,8 +11,9 @@ def main():
 
     loadData(x,y,threshold=1e-4)
 
-    singleTest(x,y,.125)
-    # multiTest(x,y,cFunc=(lambda x: .005 + .005*x), c_range=50)
+    singleTest(x,y,c=.0125)
+    # multiTest(x,y,cFunc=(lambda x: .0125 + .005*x), c_range=1,iterations=15)
+    # multiTest(x,y,cFunc=(lambda c: .0125+ .0125*c**2),c_range=5)
 
 # '../training_set/data'
 def loadData(x,y,threshold):
@@ -34,10 +35,10 @@ def loadData(x,y,threshold):
 def singleTest(x,y,c):
 
     x_train, x_test, y_train, y_test = train_test_split(
-                x, y, test_size=0.05)                                            
+                x, y, test_size=0.1)                                            
 
     clf = make_pipeline(StandardScaler(),
-                        LinearSVC(tol=1e-5, C=c, penalty='l2'))
+                        LinearSVC(tol=1e-5, C=c, penalty='l2', multi_class='ovr'))
 
     clf.fit(x_train,y_train)
 
@@ -51,14 +52,12 @@ def singleTest(x,y,c):
     print(clf.score(x_train,y_train))
 
 
-def multiTest(x,y,cFunc,c_range):
+def multiTest(x,y,cFunc,c_range:int,iterations:int=5):
     cmap = [] 
 
     for c in range(c_range):
         avg_accuracy = 0
         avg_training_accuracy = 0
-
-        iterations = 10
 
         for i in range(iterations):
 
